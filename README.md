@@ -1,3 +1,4 @@
+HEAD
 # To-Do App (PyQt6 Version)
 
 Ein einfaches Aufgabenverwaltungstool mit moderner Benutzeroberfläche in **PyQt6** und Datenpersistenz über **SQLite**.
