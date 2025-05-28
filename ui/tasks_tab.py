@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QMessageBox, QFileDialog
 )
 from PyQt6.QtCore import Qt, QDate
+import qtawesome as qta
 import csv
 
 class TasksTab(QWidget):
@@ -18,45 +19,52 @@ class TasksTab(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
 
-        # --- Form for Adding Task ---
+        # Form for adding tasks
         form_layout = QHBoxLayout()
 
         self.title_input = QLineEdit()
-        self.title_input.setPlaceholderText("Task Title")
+        self.title_input.setPlaceholderText("Enter task title...")
+        self.title_input.setStyleSheet("font-size: 16px; padding: 6px;")
         form_layout.addWidget(self.title_input)
 
         self.tag_input = QComboBox()
         self.tag_input.addItems(["Work", "Private", "Study"])
+        self.tag_input.setStyleSheet("font-size: 16px;")
         form_layout.addWidget(self.tag_input)
 
         self.due_date_input = QDateEdit()
         self.due_date_input.setDate(QDate.currentDate())
         self.due_date_input.setCalendarPopup(True)
+        self.due_date_input.setStyleSheet("font-size: 16px; padding: 6px;")
         form_layout.addWidget(self.due_date_input)
 
         self.priority_input = QComboBox()
         self.priority_input.addItems(["Low", "Medium", "High"])
+        self.priority_input.setStyleSheet("font-size: 16px;")
         form_layout.addWidget(self.priority_input)
 
-        self.btn_add = QPushButton("➕ Add Task")
-        self.btn_add.setFixedHeight(40)
-        self.btn_add.setStyleSheet("font-size: 16px;")
+        self.btn_add = QPushButton()
+        self.btn_add.setIcon(qta.icon('mdi.plus', color='green'))
+        self.btn_add.setToolTip("Add Task")
+        self.btn_add.setFixedSize(50, 50)
         self.btn_add.clicked.connect(self.add_task)
         form_layout.addWidget(self.btn_add)
 
         layout.addLayout(form_layout)
 
-        # --- Search bar ---
+        # Search bar
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("🔍 Search tasks...")
+        self.search_input.setStyleSheet("font-size: 16px; padding: 8px;")
         self.search_input.textChanged.connect(self.apply_filter)
         layout.addWidget(self.search_input)
 
-        # --- Task list area ---
+        # Scroll area for tasks
         self.task_area = QScrollArea()
         self.task_area.setWidgetResizable(True)
         self.task_list_container = QWidget()
         self.task_list_layout = QVBoxLayout(self.task_list_container)
+        self.task_list_layout.setSpacing(10)
         self.task_area.setWidget(self.task_list_container)
         layout.addWidget(self.task_area)
 
@@ -70,12 +78,12 @@ class TasksTab(QWidget):
         for task in all_tasks:
             card = QWidget()
             card_layout = QVBoxLayout(card)
-            card_layout.setContentsMargins(10, 10, 10, 10)
+            card_layout.setContentsMargins(15, 15, 15, 15)
             card.setStyleSheet("""
                 QWidget {
-                    background-color: #e0f7fa;
-                    border-radius: 10px;
-                    border: 1px solid #4dd0e1;
+                    background-color: #f5f9fc;
+                    border-radius: 12px;
+                    border: 1px solid #d1e4f3;
                 }
             """)
 
@@ -86,17 +94,21 @@ class TasksTab(QWidget):
             checkbox.stateChanged.connect(lambda _, tid=task["id"]: self.toggle_and_refresh(tid))
 
             label = QLabel(task["title"])
-            label.setStyleSheet("font-size: 18px; font-weight: bold;")
+            label.setStyleSheet("font-size: 20px; font-weight: 600;")
             label.setWordWrap(True)
 
-            btn_edit = QPushButton("✏️")
+            btn_edit = QPushButton()
+            btn_edit.setIcon(qta.icon('mdi.pencil', color='#1976d2'))
             btn_edit.setFixedSize(35, 35)
-            btn_edit.setStyleSheet("font-size: 20px; background: transparent;")
+            btn_edit.setToolTip("Edit Task")
+            btn_edit.setStyleSheet("background: transparent;")
             btn_edit.clicked.connect(lambda _, t=task: self.edit_task_dialog(t))
 
-            btn_delete = QPushButton("🗑")
+            btn_delete = QPushButton()
+            btn_delete.setIcon(qta.icon('mdi.delete', color='#d32f2f'))
             btn_delete.setFixedSize(35, 35)
-            btn_delete.setStyleSheet("font-size: 20px; background: transparent; color: #e53935;")
+            btn_delete.setToolTip("Delete Task")
+            btn_delete.setStyleSheet("background: transparent;")
             btn_delete.clicked.connect(lambda _, c=card, tid=task["id"]: self.remove_task(c, tid))
 
             top_row.addWidget(checkbox)
@@ -108,7 +120,7 @@ class TasksTab(QWidget):
             card_layout.addLayout(top_row)
 
             timestamp_label = QLabel(f"🕒 Added on {task['created_at']}")
-            timestamp_label.setStyleSheet("color: gray; font-size: 12px; margin-top: 5px;")
+            timestamp_label.setStyleSheet("color: #999; font-size: 12px; margin-top: 5px;")
             card_layout.addWidget(timestamp_label)
 
             info_row = QHBoxLayout()

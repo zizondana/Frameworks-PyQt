@@ -1,8 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
+from qt_material import apply_stylesheet
 from logic.task_manager import TaskManager
 
-# Import all tab classes
 from ui.tasks_tab import TasksTab
 from ui.calendar_tab import CalendarTab
 from ui.gantt_tab import GanttTab
@@ -20,7 +20,6 @@ class ModernTabApp(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        # Instantiate each tab and add to QTabWidget
         self.tasks_tab = TasksTab(self.manager)
         self.calendar_tab = CalendarTab(self.manager)
         self.gantt_tab = GanttTab(self.manager)
@@ -36,24 +35,13 @@ class ModernTabApp(QMainWindow):
     def toggle_theme(self):
         self.dark_mode = not self.dark_mode
         if self.dark_mode:
-            self.setStyleSheet("""
-                QMainWindow {
-                    background-color: #121212;
-                    color: #e0e0e0;
-                }
-                QLabel, QLineEdit {
-                    color: #e0e0e0;
-                }
-                QLineEdit {
-                    background-color: #2c2c2c;
-                    border: 1px solid #555;
-                }
-            """)
+            apply_stylesheet(app, theme='dark_blue.xml')
         else:
-            self.setStyleSheet("")
+            apply_stylesheet(app, theme='light_blue.xml')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    apply_stylesheet(app, theme='light_blue.xml')  
     window = ModernTabApp()
     window.show()
     sys.exit(app.exec())
